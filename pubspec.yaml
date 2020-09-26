@@ -32,7 +32,11 @@ dependencies:
   shared_preferences: ^0.5.12
   fluttertoast: ^7.1.1
   auto_size_text: ^2.1.0
-  chewie: ^0.9.10
+  video_player: ^0.10.8+1
+  webview_flutter: ^0.3.22+1
+  flick_video_player: ^0.1.1
+  syncfusion_flutter_charts: ^18.2.59
+  http: ^0.12.2
 
 dev_dependencies:
   flutter_test:
