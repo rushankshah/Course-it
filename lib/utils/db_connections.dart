@@ -32,4 +32,12 @@ class DBConnections {
     var response = await http.get(url);
     return response.body;
   }
+
+  Future getUserCourses({String userId}) async {
+    var url = homeUrl + 'api/mycourse/';
+    var response = await http.get(url, headers: {
+      'X-Auth-Token' : userId
+    });
+    print(response.body);
+  }
 }

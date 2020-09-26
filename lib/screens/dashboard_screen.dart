@@ -1,4 +1,5 @@
 import 'package:courseit/utils/constants.dart';
+import 'package:courseit/utils/db_connections.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
@@ -20,7 +21,8 @@ class _DashboardState extends State<Dashboard> {
                 style: kNormalTextStyle,
                 textAlign: TextAlign.end,
               ),
-              onPressed: (){
+              onPressed: ()async{
+                await DBConnections().getUserCourses(userId: '5f6e432663adfe308c7e9fc2');
               },
             ),
           ],
