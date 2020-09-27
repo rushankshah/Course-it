@@ -1,5 +1,6 @@
 class Quiz{
   String quizName;
   int marks;
-  Quiz({this.marks, this.quizName});
+  String quizURL;
+  Quiz({this.marks, this.quizName, this.quizURL});
 }

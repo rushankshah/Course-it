@@ -1,5 +1,4 @@
 import 'package:courseit/screens/check_screen.dart';
-import 'package:courseit/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: CheckScreen(),
     );
   }
 }

@@ -145,9 +145,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               print('Reached stage 2');
                               if(resp['token'] != null){
                                 print('Reached Stage 3');
-                                var id = resp['user']['id'];
+                                var id = resp['token'];
                                 final pref = await SharedPreferences.getInstance();
                                 await pref.setString(kStatusText, id.toString());
+                                print(pref.getString(kStatusText));
                                 print('Reached stage 4');
                                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                               }else{
@@ -175,7 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fontSize: 18, color: Colors.lightBlue),
                       ),
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => LoginScreen()));

@@ -10,20 +10,21 @@ class DBConnections {
         body:
             jsonEncode(<String, String>{"email": email, "password": password}),
         headers: {"Content-Type": "application/json"});
-    print(response.body);
     var output = jsonDecode(response.body);
-    return output["found"];
+    return output;
   }
 
   Future registerUser(User user) async {
-    var url = homeUrl + 'api/users/register';
-    var response = await http.post(url,
-        body: jsonEncode(<String, dynamic>{
-          "name": user.name,
-          "email": user.email,
-          "password": user.password
-        }),
-        headers: {"Content-Type": "application/json"});
+    var url = homeUrl + 'api/users/user_register';
+    var response = await http.post(
+      url,
+      body: jsonEncode(<String, String>{
+        'name' : user.name,
+        'email' : user.email,
+        'password' : user.password
+      }),
+      headers: {"Content-Type": "application/json"}
+    );
     return response.body;
   }
 
@@ -33,11 +34,22 @@ class DBConnections {
     return response.body;
   }
 
-  Future getUserCourses({String userId}) async {
+  Future getUserCourses({String token}) async {
     var url = homeUrl + 'api/mycourse/';
-    var response = await http.get(url, headers: {
-      'X-Auth-Token' : userId
-    });
+    var response = await http.get(url, headers: {'X-Auth-Token': token});
     print(response.body);
+    return response.body;
+  }
+
+  Future enrollInCourse({String courseId, String token})async{
+    var url = homeUrl + 'api/mycourse/enroll/' + courseId;
+    var response = await http.get(url, headers: {'X-Auth-Token': token});
+    return response.body;
+  }
+
+  Future checkCourseAndUser({String courseId, String token})async{
+    var url = homeUrl + 'api/mycourse/course_data/' + courseId;
+    var response = await http.get(url, headers: {'X-Auth-Token': token});
+    return response.body;
   }
 }

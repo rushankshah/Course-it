@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
+  final String videoUrl;
+  VideoPlayerScreen({this.videoUrl});
   @override
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
 }
@@ -15,7 +17,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.initState();
     flickManager = FlickManager(
       videoPlayerController: VideoPlayerController.network(
-          'https://firebasestorage.googleapis.com/v0/b/codeit-d447b.appspot.com/o/images%2FWhatsApp%20Video%202020-09-25%20at%209.17.56%20PM.mp4?alt=media&token=56924fc6-c66e-4f6b-a41f-6b955eb0baa1'),
+          widget.videoUrl),
     );
   }
 
