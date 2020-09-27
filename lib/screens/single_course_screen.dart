@@ -32,37 +32,48 @@ class _SingleCourseScreenState extends State<SingleCourseScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting ||
               snapshot.connectionState == ConnectionState.none) {
-            return Center(
-              child: CircularProgressIndicator(),
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
             );
           }
-          print('reached here');
           List<Video> videos = List<Video>();
           List<Quiz> quizzes = List<Quiz>();
+          List<Quiz> quizMarks = List<Quiz>();
           var resp = snapshot.data;
-          if (resp['success'] == true) {
-            List<dynamic> dynamicList = resp['data']['Course']['videos'];
+          print(resp['success']);
+          print(resp['data']);
+          if (resp['success'] == true && resp['data'].length != 0) {
+            List<dynamic> dynamicList = resp['data'][0]['Course']['videos'];
+            print(dynamicList.toString());
             dynamicList.forEach((element) {
               videos.add(Video(
-                  title: element['title'],
+                  title: element['Title'],
                   relatedCourse: element['course'],
                   url: element['Vurl'],
                   videoId: element['_id']));
             });
-            print(videos.toString());
-            List<dynamic> dynamicList2 = resp['data']['Course']['quiz'];
+            print(videos[0].title);
+            List<dynamic> dynamicList2 = resp['data'][0]['Course']['quiz'];
+            List<dynamic> dynamicList3 = resp['data'][0]["quiz_attempted"];
+            print(dynamicList3);
             dynamicList2.forEach((element) {
               quizzes.add(
                   Quiz(quizName: element['Title'], quizURL: element['Link']));
             });
-            print(quizzes.toString());
+            dynamicList3.forEach((element) {
+              quizMarks
+                  .add(Quiz(marks: element["marks"], quizName: element['_id']));
+            });
+            print(quizzes[0].quizName);
             _isCourseBought = true;
           } else {
             _isCourseBought = false;
           }
           return Scaffold(
             appBar: AppBar(
-              title: Text(
+              title: AutoSizeText(
                 widget.course.name,
                 style: kHeaderStyle,
               ),
@@ -114,17 +125,13 @@ class _SingleCourseScreenState extends State<SingleCourseScreen> {
                           SizedBox(
                             height: 5,
                           ),
-                          Text(
-                            'Price : ₹ ${widget.course.price}',
-                            style: kTitleStyle,
-                          ),
                           SizedBox(
                             height: 10,
                           ),
                           Center(
                             child: RaisedButton(
                               child: Text(
-                                'Buy now!!',
+                                'Enroll',
                                 style: kButtonText,
                               ),
                               color: kButtonColor,
@@ -136,9 +143,15 @@ class _SingleCourseScreenState extends State<SingleCourseScreen> {
                                     courseId: widget.course.courseid,
                                     token: token);
                                 resp = jsonDecode(resp);
-                                if(resp['success'] == true)
-                                {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SingleCourseScreen(course: widget.course,),));
+                                if (resp['success'] == true) {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            SingleCourseScreen(
+                                          course: widget.course,
+                                        ),
+                                      ));
                                 }
                               },
                             ),
@@ -221,62 +234,85 @@ class _SingleCourseScreenState extends State<SingleCourseScreen> {
                                   style: kTitleStyle,
                                 ),
                               ),
-                              ListView.builder(
-                                itemCount: videos.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      VideoPlayerScreen(
-                                                        videoUrl:
-                                                            videos[index].url,
-                                                      )));
-                                        },
-                                        splashColor: Colors.teal.withAlpha(30),
-                                        child: ListTile(
-                                          title: Text(
-                                            '1: ' + videos[index].title,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              ListView.builder(
-                                itemCount: quizzes.length,
-                                itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => QuizScreen(
-                                                    quizLink:
-                                                        quizzes[index].quizURL,
-                                                  )));
-                                    },
-                                    child: Center(
+                              videos.length == 0
+                                  ? Center(
                                       child: Text(
-                                        quizzes[index].quizName,
-                                        style: TextStyle(
-                                            color: Colors.pink,
-                                            fontSize: 20,
-                                            fontStyle: FontStyle.italic),
+                                        'No videos',
+                                        style: kTitleStyle,
                                       ),
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: videos.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Card(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            child: InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            VideoPlayerScreen(
+                                                              videoUrl:
+                                                                  videos[index]
+                                                                      .url,
+                                                            )));
+                                              },
+                                              splashColor:
+                                                  Colors.teal.withAlpha(30),
+                                              child: ListTile(
+                                                title: Text(
+                                                  '${index + 1}: ' +
+                                                      videos[index].title,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
+                              quizzes.length == 0
+                                  ? Center(
+                                      child: Text(
+                                        'No quizzes',
+                                        style: kTitleStyle,
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: quizzes.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        QuizScreen(
+                                                          quizLink:
+                                                              quizzes[index]
+                                                                  .quizURL,
+                                                        )));
+                                          },
+                                          child: Center(
+                                            child: Text(
+                                              quizzes[index].quizName,
+                                              style: TextStyle(
+                                                  color: Colors.pink,
+                                                  fontSize: 20,
+                                                  fontStyle: FontStyle.italic),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
                               Center(
                                 child: RaisedButton(
                                   child: Text(
@@ -296,25 +332,27 @@ class _SingleCourseScreenState extends State<SingleCourseScreen> {
                             ],
                           ),
                           Center(
-                            child: SfCartesianChart(
-                              primaryXAxis: CategoryAxis(),
-                              primaryYAxis: NumericAxis(),
-                              series: <BarSeries<Quiz, String>>[
-                                BarSeries<Quiz, String>(
-                                    dataSource: <Quiz>[
-                                      Quiz(quizName: 'Quiz 1', marks: 10),
-                                      Quiz(quizName: 'Quiz 2', marks: 3),
-                                      Quiz(quizName: 'Quiz 3', marks: 5),
+                            child: quizMarks.length == 0
+                                ? Text(
+                                    'No quizzes yet!',
+                                    style: kTitleStyle,
+                                  )
+                                : SfCartesianChart(
+                                    primaryXAxis: CategoryAxis(),
+                                    primaryYAxis: NumericAxis(),
+                                    series: <BarSeries<Quiz, String>>[
+                                      BarSeries<Quiz, String>(
+                                          dataSource: quizMarks,
+                                          xValueMapper: (Quiz quiz, _) =>
+                                              quiz.quizName,
+                                          yValueMapper: (Quiz quiz, _) =>
+                                              quiz.marks,
+                                          dataLabelSettings: DataLabelSettings(
+                                              isVisible: true),
+                                          color: Colors.teal,
+                                          width: 0.35)
                                     ],
-                                    xValueMapper: (Quiz quiz, _) =>
-                                        quiz.quizName,
-                                    yValueMapper: (Quiz quiz, _) => quiz.marks,
-                                    dataLabelSettings:
-                                        DataLabelSettings(isVisible: true),
-                                    color: Colors.teal,
-                                    width: 0.35)
-                              ],
-                            ),
+                                  ),
                           ),
                         ],
                       ),

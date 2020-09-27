@@ -43,7 +43,8 @@ class DBConnections {
 
   Future enrollInCourse({String courseId, String token})async{
     var url = homeUrl + 'api/mycourse/enroll/' + courseId;
-    var response = await http.get(url, headers: {'X-Auth-Token': token});
+    var response = await http.post(url, headers: {'X-Auth-Token': token});
+    print(response.body);
     return response.body;
   }
 
